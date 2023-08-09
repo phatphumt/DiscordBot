@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { randomInt } = require('crypto');
 const { Client, IntentsBitField, Events } = require('discord.js');
 
 const client = new Client({
@@ -13,7 +14,7 @@ const client = new Client({
 const prefix = '!f';
 const users = [];
 
-const fetchUsers = async () => {
+const fetchUsers = async (guild) => {
 	console.log('fetching users');
 	let res = await guild.members.fetch();
 
@@ -24,15 +25,13 @@ const fetchUsers = async () => {
 
 client.on('ready', (c) => {
 	console.log(`${c.user.username} is online`);
-	fetchUsers();
 });
 
 client.on(Events.ClientReady, async (client) => {
 	console.log('client ready');
 	const guild = client.guilds.cache.get(process.env.GUILD_ID);
+	fetchUsers(guild);
 });
-
-client.on(Events.GuildMemberAdd);
 
 client.on('messageCreate', (msg) => {
 	if (msg.author.bot) {
@@ -40,17 +39,17 @@ client.on('messageCreate', (msg) => {
 	}
 
 	if (msg.content === 'เก') {
-		msg.reply(`very เก ${msg.author.username}`);
+		msg.reply(`very เก <@${users[randomInt(0, users.length)]}>`);
 	}
 
 	if (msg.content === `${prefix} members`) {
 		const membersgonnasend = [];
 
 		users.forEach((member) => {
-			membersgonnasend.push(`<@${member}>\n`);
+			membersgonnasend.push(`<@${member}>`);
 		});
 
-		msg.reply(`${membersgonnasend}`);
+		console.log(`${membersgonnasend}`);
 	}
 });
 
